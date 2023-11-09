@@ -14,7 +14,7 @@ In the second section, participants will learn how they can integrate Observable
 
 -   [Observable Notebook](https://observablehq.com/d/f002f055d6fa2f8d)
 
--   [Presentation](www.google.com)
+-   [Slides]([www.google.com](https://tashapiro.github.io/intro-observable/presentation/intro-observable.html#/TitleSlide))
 
 -   [Quarto Dashboard Example](https://tashapiro.github.io/intro-observable/dashboard/dashboard.html)
 
