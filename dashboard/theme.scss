@@ -1,0 +1,86 @@
+/*-- scss:defaults --*/
+@import url('https://fonts.googleapis.com/css?family=IBM+Plex+Sans&display=swap');
+@import url('https://fonts.googleapis.com/css?family=Yomogi&display=swap');
+
+
+$title-font:"Yomogi";
+$main-color:#401487;
+$font-color:white;
+$light-color:#F4F5FB;
+$main-font:"IBM Plex Sans";
+
+
+.sidebar form {
+  flex-direction:column;
+}
+
+.bslib-card .card-body+.card-body {
+    height: 70%!important;
+}
+
+.navbar-logo {
+  border-radius:100%!important;
+}
+
+.navbar-title {
+  font-family:Yomogi;
+  text-transform:uppercase;
+}
+
+th:first-child,
+td:first-child {
+  display: none!important;
+}
+
+
+
+h1 {
+  font-family: Yomogi;
+}
+
+.quarto-dashboard.dashboard-sidebar>.page-layout-custom>.bslib-sidebar-layout>.sidebar {
+    padding-left: 1em;
+    padding-right: 1em;
+    background: $light-color;
+}
+
+input[type='range'] {
+  accent-color:$main-color!important;
+}
+
+body {
+  font-family:$main-font!important;
+}
+
+.navbar {
+  background-color:$main-color!important;
+}
+
+
+.quarto-dashboard .card.valuebox.bslib-card.bg-light {
+    background-color: $light-color!important;
+    color: $main-color!important;
+}
+
+.observablehq--number {
+  font-family:$main-font!important;
+  color:$main-color!important;
+  font-size:50px;
+}
+
+.card-header {
+  background:$light-color;
+  color:#272727;
+}
+
+.quarto-dashboard .bslib-value-box .value-box-showcase .bi {
+  font-size:3em;
+}
+
+.bslib-value-box .value-box-area { 
+padding:0px!important;
+}
+
+.html-fill-container>.html-fill-item { 
+overflow:hidden;
+}

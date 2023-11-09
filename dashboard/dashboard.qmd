@@ -1,0 +1,335 @@
+---
+title: "Taylor Swift Song Analysis"
+format: 
+  dashboard:
+    logo: tswift.jpeg
+    theme: "theme.scss"
+---
+
+```{ojs}
+//| output: false
+
+//upload data
+songs = FileAttachment("data/tswift.csv").csv({ typed: true })
+
+//get list of alums
+albums = [...new Set(songs.map(d => d.album_name))].sort()
+
+filtered_albums = [...new Set(filtered_songs.map(d => d.album_name))].sort()
+
+
+//list of audio features
+features = ["acousticness","danceability","energy", "speechiness", "instrumentalness", "liveness", "valence"]
+
+// function from Fil's notebook to calculate correlation matrix
+function corr(x, y) {
+  const n = x.length;
+  if (y.length !== n)
+    throw new Error("The two columns must have the same length.");
+  const x_ = d3.mean(x);
+  const y_ = d3.mean(y);
+  const XY = d3.sum(x, (_, i) => (x[i] - x_) * (y[i] - y_));
+  const XX = d3.sum(x, (d) => (d - x_) ** 2);
+  const YY = d3.sum(y, (d) => (d - y_) ** 2);
+  return XY / Math.sqrt(XX * YY);
+}
+
+//set up correlation matrix
+correlations = d3.cross(features, features).map(([a, b]) => ({
+  a,
+  b,
+  correlation: corr(Plot.valueof(filtered_songs, a), Plot.valueof(filtered_songs, b))
+}))
+
+
+filtered_songs_album = songs.filter(d => selectAlbums.includes(d.album_name))
+
+```
+
+# Sidebar {.sidebar}
+
+```{ojs}
+//select album input, multi-select
+viewof selectAlbums = Inputs.select(albums, {label:"Albums", value:albums, multiple:10})
+
+```
+
+**Minimums**
+
+```{ojs}
+
+//Input form of audio feature sliders
+viewof sliders = (
+  Inputs.form({ 
+        energy : Inputs.range([0,1], {label:"Energy", step:0.01, value:0}),
+        valence : Inputs.range([0,1], {label:"Valence", step:0.01, value:0}),
+        acousticness : Inputs.range([0,1], {label:"Acousticness", step:0.01, value:0}),
+        danceability : Inputs.range([0,1], {label:"Danceability", step:0.01, value:0})
+  })
+  )
+```
+
+# Summary
+
+## Value Boxes {height="150px"}
+
+### Albums
+
+```{ojs}
+//| component: valuebox
+//| title: "Albums"
+//| icon: vinyl-fill
+//| color: light
+filtered_albums.length
+```
+
+### Songs
+
+```{ojs}
+//| component: valuebox
+//| title: "Songs"
+//| icon: music-note-beamed
+//| color: light
+filtered_songs.length
+```
+
+### Avg Energy
+
+```{ojs}
+//| component: valuebox
+//| title: "Avg Energy"
+//| icon: lightning-fill
+//| color: light
+parseFloat(d3.mean(filtered_songs, d => d.energy).toFixed(2))
+```
+
+## Plots
+
+#### Plot 1
+
+::: {.card title="Feature Correlation Matrix"}
+```{ojs}
+
+
+
+Plot.plot({
+  marginBottom:70,
+  marginLeft:100,
+  //adjust plot dimensions
+  //adjust plot labels 
+  label: null, //specific for x and y axis labels
+  style: {fontFamily: "Roboto"},
+  //customize x and y axis
+  y: {tickSize:0},
+  x: {tickSize:0},
+  //customize legend
+  color: { scheme: "PuOr", pivot: 0, legend: true, label: "Correlation" },
+  marks: [
+    Plot.cell(correlations, { x: "a", y: "b", fill: "correlation" }),
+    Plot.text(correlations, {
+      x: "a",
+      y: "b",
+      fontSize: 15,
+      //map using functions to do something additional with data
+      text: d => d.correlation.toFixed(2), // round corr values to 2nd decimal
+      fill: d => (Math.abs(d.correlation) > 0.6 ? "white" : "black") //if then function for text color
+    })
+  ]
+})
+```
+:::
+
+#### Plot 2
+
+::: {.card title="Feature Cross Analysis"}
+
+```{ojs}
+viewof filters = (
+  Inputs.form({ 
+        selectX : Inputs.select(features, {label:"Select X", value:"energy"}),
+        selectY : Inputs.select(features, {label:"Select Y", value:"acousticness"}),
+  },
+    {template})
+  )
+```
+
+```{ojs}
+  
+Plot.plot({
+  grid: true,
+  marginBottom:20,
+  marks: [
+    Plot.ruleY([0]),
+       Plot.dot(filtered_songs, {x: filters.selectX, 
+                     y: filters.selectY,
+                     title: "track_name",
+                     fill: "#401487",
+                     stroke: "white",
+                     opacity: 0.9,
+                     r: 6})
+  ]
+})
+
+```
+:::
+
+# Songs
+
+## Table
+
+```{ojs}
+// | output: false
+
+// set up DuckDB for querying 
+db = DuckDBClient.of({ 
+	songs: filtered_songs_album,
+})
+
+```
+
+```{ojs}
+// | output: false
+
+//use SQL to apply filters and return a new array
+filtered_songs = db.sql`SELECT 
+  track_name
+  ,album_name
+  ,round(liveness,2) as liveness
+  ,round(valence,2) as valence
+  ,round(energy,2) as energy
+  ,round(acousticness,2) as acousticness
+  ,danceability
+  ,speechiness
+  ,instrumentalness
+FROM songs
+WHERE 
+valence >= ${sliders.valence}
+and album_name <> 'NA'
+and energy >= ${sliders.energy}
+and danceability>= ${sliders.danceability}
+and acousticness >= ${sliders.acousticness}`
+```
+
+```{ojs}
+// | output: false
+function heatmap(value, minValue, maxValue) {
+  // Calculate the color scale based on the value's position
+  var scale = (value - minValue) / (maxValue - minValue);
+  var color = getColorFromScale(scale);
+
+  var fontColor = value > 0.3 ? "white" : "black";
+
+  // Create the output div with the scaled background color
+  return htl.html`
+    <div style="background-color: ${color}; color: ${fontColor}; text-align: center;">
+      ${value}
+    </div>
+  `;
+}
+
+
+function getColorFromScale(scale) {
+
+  var colors = d3.schemeBuPu[7]
+
+  // Calculate the index of the color in the color ramp based on the scale
+  var index = Math.floor(scale * (colors.length - 1));
+
+  // Get the start and end colors from the color ramp
+  var startColor = hexToRgb(colors[index]);
+  var endColor = hexToRgb(colors[index + 1]);
+
+  // Helper function to convert hex color to RGB
+function hexToRgb(hex) {
+  var shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
+  hex = hex.replace(shorthandRegex, function (m, r, g, b) {
+    return r + r + g + g + b + b;
+  });
+
+  var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+  return result ? [
+    parseInt(result[1], 16),
+    parseInt(result[2], 16),
+    parseInt(result[3], 16)
+  ] : [255, 255, 255]; // Default to white if invalid hex color
+}
+
+  // Calculate the intermediate color based on the scale
+  var color = startColor.map(function (channel, i) {
+    var range = endColor[i] - channel;
+    return Math.round(channel + range * (scale * (colors.length - 1) - index));
+  });
+
+  // Return the color in RGB format
+  return "rgb(" + color.join(",") + ")";
+}
+
+```
+
+::: {.card title="Songs"}
+```{ojs}
+Inputs.table(filtered_songs, {
+  //how many rows to display
+  rows:40,
+  //format table column names
+  header: {
+    album_name: "Album Name",
+    track_name: "Track",
+    liveness: "Liveness",
+    energy: "Energy",
+    acousticness: "Acousticness",
+    valence: "Valence",
+    speechiness: "Speechiness"
+  },
+  //adjust column width 
+  width: {
+    track_name: "25%",
+    album_name: "15%",
+    liveness: "12%", 
+    valence: "12%", 
+    acousticness: "12%", 
+    energy: "12%",
+    speechiness: "12%"
+  },
+  //align columns 
+  align: {
+    liveness: "center",
+    valence: "center",
+    energy: "center", 
+    acousticness: "center",
+    speechiness: "center"
+  },
+  //format with additional functions 
+  format: {
+    liveness: x => heatmap(x,0,1),
+    energy: x => heatmap(x,0,1),
+    valence: x => heatmap(x,0,1),
+    acousticness: x => heatmap(x,0,1),
+    speechiness: x => heatmap(x,0,1)
+  }
+})
+```
+:::
+
+```{ojs}
+//| output: false
+//| 
+// Template credit: This layout is updated from Martien van Steenbergen @martien/horizontal-inputs
+
+template = (inputs) => 
+htl.html`<div class="styled">${Object.values(inputs)}</div>
+<style>
+  div.styled {
+    text-align: left;
+    column-count: 2
+  }
+  div.styled label {
+    font-weight: bold;
+    line-height: 200%;
+  }
+  div.styled label:not(div>label):after {
+    content: ":";
+  }
+</style>`
+
+```
