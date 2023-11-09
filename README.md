@@ -16,6 +16,6 @@ In the second section, participants will learn how they can integrate Observable
 
 -   [Presentation](www.google.com)
 
--   [Quarto Dashboard Example](www.tbd.com)
+-   [Quarto Dashboard Example](https://tashapiro.github.io/intro-observable/dashboard/dashboard.html)
 
 **Note**: The Quarto Dashboard uses the pre-release version of Quarto, 1.4. To run this example, users will need to download this version.
