@@ -1,0 +1,142 @@
+---
+format: 
+  revealjs:
+    footer: "Tanya Shapiro | R-Ladies Philly"
+    slide-number: true
+    theme: "theme.scss"
+    embed-resources: true
+    self-contained: TRUE
+---
+
+##  {#TitleSlide data-menu-title="TitleSlide" background-color="white" background-image="images/title-slide.png" background-position="center center" background-size="cover"}
+
+```{=html}
+<style>
+
+form {
+  font-size:16px!important;
+}
+
+</style>
+```
+## Hi, I'm Tanya!
+
+```{=html}
+<div class="about-me" style="display:flex;align-items:center;">
+<img src="images/headshot.jpeg">
+  <div style='margin-left:30px;'>
+    <ul>
+        <li>Independent data consultant, specializing in data analysis and visualization design</li>
+      <li>Previously worked in insurance industry</li>
+      <li>Fell in love with R via <a href='https://github.com/rfordatascience/tidytuesday'>#TidyTuesday</a></li>
+      <li>Data geek based in St. Pete, FL</li>
+    </ul>
+  </div>
+</div>
+   <div class="social-icons">
+      <a href="https://github.com/tashapiro"><i class="fab fa-github"></i></a>
+      <a href="https://twitter.com/tanya_shapiro"><i class="fab fa-twitter"></i></a>
+      <a href="https://www.linkedin.com/in/shapirotanya/"><i class="fab fa-linkedin"></i></a>
+      <a href="https://mastodon.social"><i class="fab fa-mastodon"></i></a>
+      <a href="www.tanyaviz.com"><i class="fas fa-globe"></i></a>
+    </div>
+```
+## Data Viz Learning Journey
+
+Started off with building visuals in R. Then I wanted to get into more interactive visuals...
+
+::: columns
+::: {.column style="width:40%;"}
+![Actual footage of me stressing out.](https://media.giphy.com/media/76Nahzjx4Y6WXP2APE/giphy.gif)
+:::
+
+::: {.column style="width:60%;"}
+-   What is node.js?
+-   What is D3? And svg?
+-   What IDE should I use?
+-   Omg where do I start
+:::
+:::
+
+## A Less Intimidating Way to Start...
+
+Observable Notebooks = my new playground for data viz experiments
+
+::: columns
+::: {.column style="width:40%;"}
+![Going from overwhelmed to excited](https://media.giphy.com/media/arKAOElAQxszte7YfJ/giphy.gif)
+:::
+
+::: {.column style="width:60%;"}
+-   No fuss with installation
+-   Accessible community, lots of resources
+-   Observable Plot felt familiar
+-   Integrate easily with my Quarto site
+:::
+:::
+
+## What is Observable Plot?
+
+::: columns
+::: {.column style="width:50%;font-size:35px;"}
+-   Free and open-source JS library for data viz
+
+-   Under the hood - D3!
+
+-   Inspired by the grammar of graphics
+
+-   Create visuals with layered marks
+
+-   Combine with inputs to create interactive plots
+:::
+
+::: {.column style="width:50%"}
+![](images/observable.png){fig-align="center"}
+:::
+:::
+
+## Example of Observable Plot
+
+#### Big Tech Stock Prices
+
+```{ojs}
+
+stocks = FileAttachment("data/big_tech_stock_prices.csv").csv({ typed: true })
+
+tickers = ["AAPL","ADBE","IBM","META", "GOOGL"]
+
+viewof selectStock = Inputs.select(tickers, {label:"Stock", value: "GOOGL"})
+
+
+filtered_stocks = stocks.filter(d => d.stock_symbol === selectStock)
+
+Plot.plot({
+  width:1000,
+  x: {label:''},
+  y: {label:'Close ($)', grid:true},
+  marks: [
+    Plot.areaY(filtered_stocks, {x: "date", y: "close", fillOpacity: 0.3, fill:'#4197FF'}),
+    Plot.lineY(filtered_stocks, {x: "date", y: "close", stroke:'#4197FF'}),
+    Plot.ruleY([0])
+  ]
+})
+
+```
+
+## Goals for Today
+
+```{=html}
+<div class="blocks">
+  <div class="block" data-step="1"><i class="fa fa-book-open"></i><span>Learn about Observable Notebooks</span></div>
+  <div class="block" data-step="2"><i class="fas fa-chart-column"></i><span>Work with Observable Plot</div>
+  <div class="block" data-step="3"><i class="fas fa-computer-mouse"></i><span>Add in dynamic inputs</span></div>
+  <div class="block" data-step="4"><i class="fas fa-rocket"></i><span>Combine Observable with Quarto</span></div>
+</div>
+```
+## Let's Get Plotting!
+
+Reroute to this [Observable Notebook](https://observablehq.com/d/f002f055d6fa2f8d).
+
+::: {.div style="width:100%;display:flex;justify-content:center;"}
+[![To The Notebook!](https://media.giphy.com/media/l0CPbjYU8276ahvLa/giphy.gif){fig-align="center" width="800"}](https://observablehq.com/d/f002f055d6fa2f8d)
+:::

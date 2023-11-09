@@ -1,0 +1,74 @@
+/*-- scss:defaults --*/
+
+@import url("https://use.fontawesome.com/releases/v6.4.2/css/all.css");
+@import url('https://fonts.googleapis.com/css?family=Roboto&display=swap');
+
+
+$font-family-sans-serif: "Roboto";
+$primary-color: #54278f;
+$code-color:#49BCFF;
+
+ .blocks {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.block i {
+  margin-right: 20px;
+  margin-left: 10px;
+}
+
+figcaption {
+    font-size: 0.6em!important;
+    color: grey!important;
+}
+
+.block {
+  border-radius:10px;
+  height:60px;
+  flex: 1 1 calc(50% - 20px); /* changed */
+  background-color: $primary-color;
+  color: white;
+  margin: 1%;
+  padding: 2%;
+  opacity: 1;
+  transition: opacity 0.5s;
+  display: flex; /* added */
+  justify-content: left; /* added */
+  align-items: center; /* added */
+  text-align: left; /* added */
+}
+
+.block code {
+  color: whitesmoke !important;
+}
+
+.about-me {
+    margin-top:50px;
+    vertical-align:middle;}
+    
+    
+  .social-icons {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+    font-size:1.2em;
+    width:50%;
+    margin-left:200px;
+  }
+  
+  .social-icons a {
+    display: inline-flex;
+    margin-left:15px;
+    margin-right:15px;
+  }
+  
+
+
+  .about-me img {
+      width: 220px!important;
+      height:220px;
+      clip-path: inset(0 0 0 0 round 50%);
+  }
+
